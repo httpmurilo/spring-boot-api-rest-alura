@@ -15,6 +15,6 @@ public class TopicosController {
     @RequestMapping("/")
     @ResponseBody
     public List<TopicoDto> listar() {
-
+        return null;
     }
 }
