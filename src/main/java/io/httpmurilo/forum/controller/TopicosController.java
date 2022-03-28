@@ -8,6 +8,12 @@ import io.httpmurilo.forum.model.Topico;
 import io.httpmurilo.forum.repository.CursoRepository;
 import io.httpmurilo.forum.repository.TopicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +23,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -31,21 +35,23 @@ public class TopicosController {
     private CursoRepository cursoRepository;
 
     @GetMapping
-    public List<TopicoDto> listar(String nomeCurso) {
-
-        List<Topico> topicos = new ArrayList<>();
+    @Cacheable(value = "listaDeTopicos")
+    public Page<TopicoDto> listar(@RequestParam(required = false) String nomeCurso,
+                                  @PageableDefault(sort = "id", direction = Sort.Direction.DESC, page = 0, size = 10)
+                                  Pageable paginacao) {
 
         if(nomeCurso == null) {
-            topicos = topicoRepository.findAll();
-            return TopicoDto.converter(topicos);
+            Page<Topico> all = topicoRepository.findAll(paginacao);
+            return TopicoDto.converter(all);
         }
 
-        topicos = topicoRepository.findByCurso_Nome(nomeCurso);
+        Page<Topico> topicos= topicoRepository.findByCurso_Nome(nomeCurso, paginacao);
         return TopicoDto.converter(topicos);
 
-    }
+     }
 
     @PostMapping("/")
+    @CacheEvict(value = "listaDeTopicos", allEntries = true)
     public ResponseEntity<TopicoDto> cadastrar(@Valid @RequestBody TopicoInputDto dto, UriComponentsBuilder uriBuilder) {
         Topico topico = dto.converter(cursoRepository);
         topicoRepository.save(topico);
