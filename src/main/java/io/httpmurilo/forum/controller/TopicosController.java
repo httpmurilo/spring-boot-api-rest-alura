@@ -11,12 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/topicos")
@@ -53,18 +56,25 @@ public class TopicosController {
 
     @GetMapping("/{id}")
     public DetalhesTopicoDto detalhar(@PathVariable Long id) {
-        Topico topico = topicoRepository.getById(id);
-        return new DetalhesTopicoDto(topico);
+        Optional<Topico> topico = Optional.ofNullable(topicoRepository.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND)));
+
+        return new DetalhesTopicoDto(topico.get());
     }
 
     @PutMapping("/{id}")
+    @Transactional
     public ResponseEntity<TopicoDto> atualizar(@PathVariable Long id, @RequestBody @Valid TopicoEditDto topicoDto) {
     Topico topico = topicoDto.atualizar(id, topicoRepository);
 
     //não precisa chamar o metodo de salvamento, pois o JPA já realiza o reconhecimento
 
     return  ResponseEntity.ok(new TopicoDto(topico));
+    }
 
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> remover(@PathVariable Long id) {
+        topicoRepository.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 }
