@@ -8,6 +8,8 @@ import javax.persistence.Id;
 @Entity
 public class Curso {
 
+    public Curso() {}
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

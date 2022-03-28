@@ -7,6 +7,8 @@ import java.util.List;
 
 @Table
 public class Topico {
+    public Topico() {
+    }
 
     public Topico(String titulo, String mensagem, Curso curso) {
         this.titulo = titulo;
@@ -14,12 +16,14 @@ public class Topico {
         this.curso = curso;
     }
 
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String titulo;
     private String mensagem;
-    private LocalDateTime dataCriacao;
+    private LocalDateTime dataCriacao = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
     private StatusTopico status = StatusTopico.NAO_RESPONDIDO;
