@@ -1,6 +1,8 @@
 package io.httpmurilo.forum.controller;
 
+import io.httpmurilo.forum.dto.DetalhesTopicoDto;
 import io.httpmurilo.forum.dto.TopicoDto;
+import io.httpmurilo.forum.dto.TopicoEditDto;
 import io.httpmurilo.forum.dto.TopicoInputDto;
 import io.httpmurilo.forum.model.Topico;
 import io.httpmurilo.forum.repository.CursoRepository;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,12 +43,28 @@ public class TopicosController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<TopicoDto> cadastrar(@RequestBody TopicoInputDto dto, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<TopicoDto> cadastrar(@Valid @RequestBody TopicoInputDto dto, UriComponentsBuilder uriBuilder) {
         Topico topico = dto.converter(cursoRepository);
         topicoRepository.save(topico);
 
         URI uri = uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
         return ResponseEntity.created(uri).body(new TopicoDto(topico));
+    }
+
+    @GetMapping("/{id}")
+    public DetalhesTopicoDto detalhar(@PathVariable Long id) {
+        Topico topico = topicoRepository.getById(id);
+        return new DetalhesTopicoDto(topico);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TopicoDto> atualizar(@PathVariable Long id, @RequestBody @Valid TopicoEditDto topicoDto) {
+    Topico topico = topicoDto.atualizar(id, topicoRepository);
+
+    //não precisa chamar o metodo de salvamento, pois o JPA já realiza o reconhecimento
+
+    return  ResponseEntity.ok(new TopicoDto(topico));
+
 
     }
 }

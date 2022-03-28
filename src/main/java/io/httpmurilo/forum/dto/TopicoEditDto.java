@@ -1,19 +1,16 @@
 package io.httpmurilo.forum.dto;
 
-import io.httpmurilo.forum.model.Curso;
 import io.httpmurilo.forum.model.Topico;
-import io.httpmurilo.forum.repository.CursoRepository;
+import io.httpmurilo.forum.repository.TopicoRepository;
 
 import javax.validation.constraints.NotNull;
 
-public class TopicoInputDto {
+public class TopicoEditDto {
 
     @NotNull
     private String titulo;
     @NotNull
     private String mensagem;
-    @NotNull
-    private String nomeCurso;
 
     public String getTitulo() {
         return titulo;
@@ -31,16 +28,12 @@ public class TopicoInputDto {
         this.mensagem = mensagem;
     }
 
-    public String getNomeCurso() {
-        return nomeCurso;
-    }
+    public Topico atualizar(Long id, TopicoRepository topicoRepository) {
+        Topico topico = topicoRepository.getById(id);
 
-    public void setNomeCurso(String nomeCurso) {
-        this.nomeCurso = nomeCurso;
-    }
+        topico.setTitulo(this.titulo);
+        topico.setMensagem(this.mensagem);
 
-    public Topico converter(CursoRepository cursoRepository) {
-        Curso curso = cursoRepository.findByNome(nomeCurso);
-        return new Topico(titulo, mensagem, curso);
+        return topico;
     }
 }
