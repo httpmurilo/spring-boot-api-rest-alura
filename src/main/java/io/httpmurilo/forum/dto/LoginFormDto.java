@@ -1,5 +1,7 @@
 package io.httpmurilo.forum.dto;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+
 public class LoginFormDto {
 
     private String email;
@@ -19,5 +21,9 @@ public class LoginFormDto {
 
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    public UsernamePasswordAuthenticationToken converter() {
+        return new UsernamePasswordAuthenticationToken(email, senha);
     }
 }

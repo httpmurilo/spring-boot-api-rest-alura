@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Table
+@Entity
 public class Topico {
+
     public Topico() {
     }
 
@@ -15,8 +17,6 @@ public class Topico {
         this.mensagem = mensagem;
         this.curso = curso;
     }
-
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

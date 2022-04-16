@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
+@Table
 public class Usuario implements UserDetails {
 
     public Usuario() {

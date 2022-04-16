@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
+@Table
 public class Resposta {
 
     public Resposta() {}
